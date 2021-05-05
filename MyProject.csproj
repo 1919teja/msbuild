@@ -1,0 +1,22 @@
+<Project  xmlns="http://schemas.microsoft.com/developer/msbuild/2003" >
+
+  <PropertyGroup>
+   <AssemblyName>MSBuildSample</AssemblyName>
+   <OutputPath>Bin\</OutputPath>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Compile Include="helloworld.cs"/> 
+  </ItemGroup>
+  <Target Name="Build">
+  <MakeDir Directories="$(OutputPath)" Condition="!Exists('OutputPath)')" />
+  <Csc Sources="@(Compile)" OutputAssembly ="$(OutputPath)$(AssemblyName).exe"/>
+  </Target>
+ <Target Name="Deploy">
+    <MSBuild Projects="$(SolutionFile)" 
+             Properties="Configuration=$(Configuration);DeployOnBuild=true;DeployTarget=Package" 
+             ContinueOnError="false" />
+    <Exec Command="&quot;$(ProjectPath)\obj\$(Configuration)\Package\$(ProjectName).deploy.cmd&quot; /y /m:$(DeployServer) -enableRule:DoNotDeleteRule" 
+          ContinueOnError="false" />
+</Target>
+</Project>
